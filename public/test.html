@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>iPhone Motion Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <h2>Tap the button to enable motion access</h2>
+  <button id="btn" style="font-size:24px; padding:20px;">Enable Motion</button>
+
+  <script>
+    const btn = document.getElementById('btn');
+
+    btn.addEventListener('click', () => {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            alert("Permission response: " + response);
+            if(response === 'granted') {
+              window.addEventListener('devicemotion', (event) => {
+                console.log('x:', event.acceleration.x,
+                            'y:', event.acceleration.y,
+                            'z:', event.acceleration.z);
+              });
+            }
+          })
+          .catch(err => alert("Error: " + err));
+      } else {
+        alert("DeviceMotionEvent.requestPermission() not needed on this device.");
+      }
+    });
+  </script>
+</body>
+</html>
