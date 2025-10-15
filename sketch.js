@@ -1,10 +1,12 @@
 let permissionGranted = false;
 let bgColor = 220; // default background
 
-// Shake thresholds (you can tweak these)
-const lightShake = 10;  // mild shake
-const mediumShake = 15; // medium shake
-const strongShake = 20; // strong shake
+// Shake thresholds
+const lightShake = 10;  
+const mediumShake = 15; 
+const strongShake = 20;
+
+let accel = { x: 0, y: 0, z: 0 }; // store current accelerometer values
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -20,8 +22,17 @@ function setup() {
         .then(response => {
           if (response === 'granted') {
             permissionGranted = true;
-            enableButton.style.display = 'none'; // hide button
+            enableButton.style.display = 'none';
             console.log('Motion permission granted');
+
+            // Start listening to motion events
+            window.addEventListener('devicemotion', (event) => {
+              if (event.acceleration) {
+                accel.x = event.acceleration.x || 0;
+                accel.y = event.acceleration.y || 0;
+                accel.z = event.acceleration.z || 0;
+              }
+            });
           } else {
             alert('Motion permission denied');
           }
@@ -31,6 +42,14 @@ function setup() {
       // For non-iOS devices
       permissionGranted = true;
       enableButton.style.display = 'none';
+      // Listen to motion events
+      window.addEventListener('devicemotion', (event) => {
+        if (event.acceleration) {
+          accel.x = event.acceleration.x || 0;
+          accel.y = event.acceleration.y || 0;
+          accel.z = event.acceleration.z || 0;
+        }
+      });
     }
   });
 }
@@ -43,38 +62,38 @@ function draw() {
   }
 
   // Compute total acceleration
-  const totalAccel = Math.sqrt(accelerationX**2 + accelerationY**2 + accelerationZ**2);
+  const totalAccel = Math.sqrt(accel.x**2 + accel.y**2 + accel.z**2);
 
   // Change background color based on thresholds
   if (totalAccel > strongShake) {
-    bgColor = color(255, 0, 0); // strong shake → red
+    bgColor = [255, 0, 0]; // red
   } else if (totalAccel > mediumShake) {
-    bgColor = color(255, 165, 0); // medium shake → orange
+    bgColor = [255, 165, 0]; // orange
   } else if (totalAccel > lightShake) {
-    bgColor = color(255, 255, 0); // light shake → yellow
+    bgColor = [255, 255, 0]; // yellow
   } else {
-    bgColor = color(220); // no shake → default grey
+    bgColor = [220]; // grey
   }
 
   background(bgColor);
 
   // Display accelerometer values on canvas
   text("Move your phone!", width / 2, height / 2 - 60);
-  text(`x: ${accelerationX.toFixed(2)}`, width / 2, height / 2 - 20);
-  text(`y: ${accelerationY.toFixed(2)}`, width / 2, height / 2 + 20);
-  text(`z: ${accelerationZ.toFixed(2)}`, width / 2, height / 2 + 60);
+  text(`x: ${accel.x.toFixed(2)}`, width / 2, height / 2 - 20);
+  text(`y: ${accel.y.toFixed(2)}`, width / 2, height / 2 + 20);
+  text(`z: ${accel.z.toFixed(2)}`, width / 2, height / 2 + 60);
 
   // Display values in log div
   const logDiv = document.getElementById('log');
   if (logDiv) {
     logDiv.innerText = `
-x: ${accelerationX.toFixed(2)}
-y: ${accelerationY.toFixed(2)}
-z: ${accelerationZ.toFixed(2)}
+x: ${accel.x.toFixed(2)}
+y: ${accel.y.toFixed(2)}
+z: ${accel.z.toFixed(2)}
 total: ${totalAccel.toFixed(2)}
     `;
   }
 
-  // Also log to console for Web Inspector
-  console.log(`x: ${accelerationX.toFixed(2)}, y: ${accelerationY.toFixed(2)}, z: ${accelerationZ.toFixed(2)}, total: ${totalAccel.toFixed(2)}`);
+  // Log to console
+  console.log(`x: ${accel.x.toFixed(2)}, y: ${accel.y.toFixed(2)}, z: ${accel.z.toFixed(2)}, total: ${totalAccel.toFixed(2)}`);
 }
