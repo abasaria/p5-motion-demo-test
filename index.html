@@ -13,30 +13,8 @@
 </head>
 <body>
   <button id="enableMotion">Tap to Enable Motion</button>
-  <div id="canvasContainer"></div>
+  <div id="log" style="font-size:18px; margin-top:20px;"></div>
 
   <script src="sketch.js"></script>
-  <script>
-    const btn = document.getElementById('enableMotion');
-
-    btn.addEventListener('click', () => {
-      if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-          .then(response => {
-            if (response === 'granted') {
-              btn.style.display = 'none'; // hide button
-              console.log('Motion permission granted');
-            } else {
-              alert('Motion permission denied');
-            }
-          })
-          .catch(err => console.error(err));
-      } else {
-        // For non-iOS devices
-        btn.style.display = 'none';
-        console.log('Motion permission not needed');
-      }
-    });
-  </script>
 </body>
 </html>
