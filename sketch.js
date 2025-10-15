@@ -36,24 +36,23 @@ function draw() {
     text("Tap the button above to enable motion access", width / 2, height / 2);
   } else {
     text("Move your phone!", width / 2, height / 2 - 40);
+
+    // Display values on canvas
     text(`x: ${accelerationX.toFixed(2)}`, width / 2, height / 2);
     text(`y: ${accelerationY.toFixed(2)}`, width / 2, height / 2 + 40);
     text(`z: ${accelerationZ.toFixed(2)}`, width / 2, height / 2 + 80);
-  }
-}
 
-// Send live data to your Node.js server
-function deviceMoved() {
-  if (permissionGranted) {
-    fetch('/imu', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        x: accelerationX,
-        y: accelerationY,
-        z: accelerationZ,
-        t: millis()
-      })
-    }).catch(err => console.error("Fetch error:", err));
+    // Display values in a log div (optional)
+    const logDiv = document.getElementById('log');
+    if (logDiv) {
+      logDiv.innerText = `
+x: ${accelerationX.toFixed(2)}
+y: ${accelerationY.toFixed(2)}
+z: ${accelerationZ.toFixed(2)}
+      `;
+    }
+
+    // Also log to console for Web Inspector on Mac
+    console.log(`x: ${accelerationX.toFixed(2)}, y: ${accelerationY.toFixed(2)}, z: ${accelerationZ.toFixed(2)}`);
   }
 }
